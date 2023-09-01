@@ -1,0 +1,35 @@
+
+.my-page-header {
+    grid-area: nav-header;
+    background-color: red;
+    height: 50px;
+    padding: 10px;
+}
+
+.my-page-body {
+    grid-area: main-body;
+    height: 400px;
+    background-color: blue;
+    padding: 10px;
+}
+
+.my-page-sidebar{
+    grid-area: nav-side;
+    background-color: green;
+    padding: 10px;
+}
+
+.my-page-footer {
+    grid-area: footer;
+    height: 50px;
+    background-color: yellow;
+    padding: 10px;
+}
+
+.my-page {
+    display: grid;
+    grid-template-areas: 
+        "nav-header nav-header nav-header nav-side"
+        "main-body main-body . nav-side"
+        "footer footer footer footer";
+    }

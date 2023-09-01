@@ -1,0 +1,83 @@
+<div>
+    <h2>@sassy_pants_mcgee</h2>
+    <h3>Posted 15m ago</h3>
+    <img src="http://pets-images.dev-apis.com/pets/dog25.jpg" alt="a doggy" />
+    <p>
+        You ever think about barking out the window? What would happen if I didn't bark at them? Keeps me up at night. 
+    </p>
+</div>
+
+<!-- It's possible to use an article instead of a div, functionally no difference, but an article will be more spesific for the content -->
+<!-- A section might also be used, is more like a macro unit of a website. -->
+
+<!-- An updated version with classes-->
+<div class="social-post">
+    <h2 class="user-name">@sassy_pants_mcgee</h2>
+    <h3 class="posted-date">Posted 15m ago</h3>
+    <img 
+        class="profile-picture"
+        src="http://pets-images.dev-apis.com/pets/dog25.jpg" 
+        alt="a doggy" 
+    />
+    <p class="social-post-text">
+        You ever think about barking out the window? What would happen if I didn't bark at them? Keeps me up at night. 
+    </p>
+</div>
+
+<!-- Now they are reusable and we can make a feed -->
+<div class="social-feed">
+    <div class="social-post">
+        <h2 class="user-name">@sassy_pants_mcgee</h2>
+        <h3 class="posted-date">Posted 15m ago</h3>
+        <img 
+            class="profile-picture"
+            src="http://pets-images.dev-apis.com/pets/dog25.jpg" 
+            alt="a doggy" 
+        />
+        <p class="social-post-text">
+            You ever think about barking out the window? What would happen if I didn't bark at them? Keeps me up at night. 
+        </p>
+    </div>
+    <div class="social-post">
+        <h2 class="user-name">@TailCurious</h2>
+        <h3 class="posted-date">Posted 18m ago</h3>
+        <img 
+            class="profile-picture"
+            src="http://pets-images.dev-apis.com/pets/dog26.jpg" 
+            alt="a different doggy" 
+        />
+        <p class="social-post-text">
+            You ever notice that white bit of fluff behind you? Is that just me? I always try to chase it but it's always gets away. #ScaryTails
+        </p>
+    </div>
+    <div class="social-post">
+        <h2 class="user-name">@haveUrCakeAndEatIt2</h2>
+        <h3 class="posted-date">Posted 21m ago</h3>
+        <img 
+            class="profile-picture"
+            src="http://pets-images.dev-apis.com/pets/dog27.jpg" 
+            alt="a doggy" 
+        />
+        <p class="social-post-text">
+            #BirthdayGrrrrrrrl
+        </p>
+    </div>
+</div>
+
+<!-- Lage et navbar -->
+<nav class="header-nav">
+    <ul class="nav-list">
+        <li class="nav-list-item">
+            <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-list-item">
+            <a class="nav-link" href="/news">Newsfeed</a>
+        </li>
+        <li class="nav-list-item">
+            <a class="nav-link" href="/about">About</a>
+        </li>
+        <li class="nav-list-item">
+            <a class="nav-link" href="/contact">Contact</a>
+        </li>
+    </ul>
+</nav>
