@@ -111,11 +111,6 @@ function multiply(numb1, numb2) {
 }
 
 function subtraction(numb1, numb2) {
-    /* if ((numb1 - numb2) < 0) {
-        return 0
-    } else {
-        return numb1 - numb2
-    } */
     return numb1 - numb2
 }
 
