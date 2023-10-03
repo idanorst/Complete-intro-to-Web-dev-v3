@@ -1,36 +1,140 @@
-async function getWord(url) {
-    const response = await fetch(url, {method: "GET"})
-    const wordObject = await response.json()
-    const word = wordObject.word
-    return word
-}
+const letters = document.querySelectorAll(".letter-box")
+const loadingDiv = document.querySelector(".info-bar")
+const ANSWER_LENGTH = 5
+const ROUNDS = 6
+const WORD_URL = "https://words.dev-apis.com/word-of-the-day"
+const RANDOM_WORD_URL = "https://words.dev-apis.com/word-of-the-day?random=1"
+const VALIDATE_WORD_URL = "https://words.dev-apis.com/validate-word"
 
-async function validateWord(url, wordGuess) {
-    try {
-        const response = await fetch(url, {
-            method: "POST", 
-            body: JSON.stringify({
-                word: wordGuess
-            })
-        })
-        const validation = await response.json()
-        return validation
-    } catch (error) {
-        console.error(error)
+async function init() {
+    let done = false
+    let currentGuess = ''
+    let currentRow = 0
+    let isLoading = true
+    setLoading(isLoading)
+
+    // collect the word of the day
+    const res = await fetch(WORD_URL)
+    const resObject = await res.json()
+    const correctWord = resObject.word.toUpperCase()
+    const correctWordParts = correctWord.split("")
+
+    console.log(correctWord)
+
+    isLoading = false
+    setLoading(isLoading)
+    
+    function addLetter(letter) {
+        if (currentGuess.length < ANSWER_LENGTH) {
+            currentGuess += letter
+        } /* else {
+            currentGuess = currentGuess.substring(0, currentGuess - 1) + letter
+        } */ else {
+            return
+        }
+
+        letters[currentRow * ANSWER_LENGTH + currentGuess.length - 1].innerText = letter
     }
-}
 
-function setValidation(validation) {
-    valid = validation
-    return valid
-}
+    async function commit() {
+        if (currentGuess.length !== ANSWER_LENGTH) {
+            // do nothing
+            return
+        }
 
-function getPosition(word, letter, index) {
-    return word.split(letter, index).join(letter).length
-}
+        isLoading = true
+        setLoading(isLoading)
 
-const countOccurences = (word, search) => {
-    return word.split(search).length - 1
+        const res = await fetch(VALIDATE_WORD_URL, {
+            method: "POST", 
+            body: JSON.stringify({ word: currentGuess})
+        })
+        const resObject = await res.json()
+        const validWord = resObject.validWord
+        // cosnt { validWord } = resObject
+
+        isLoading = false
+        setLoading(isLoading)
+
+        if (!validWord) {
+            markInvalidWord()
+            return
+        }
+
+        const guessParts = currentGuess.split("")
+        const map = makeMap(correctWordParts)
+
+        for (let i = 0; i < ANSWER_LENGTH; i++) {
+            // mark as correct
+            if (guessParts[i] === correctWordParts[i]) {
+                letters[currentRow * ANSWER_LENGTH + i].classList.add("all-correct")
+                map[guessParts[i]]--
+            }
+        }
+
+        for (let i = 0; i < ANSWER_LENGTH; i++) {
+            if (guessParts[i] === correctWordParts[i]) {
+                // do nothing
+            } else if (correctWordParts.includes(guessParts[i]) && map[guessParts[i]] >= 1) {
+                letters[currentRow * ANSWER_LENGTH + i].classList.add("correct-letter")
+                map[guessParts[i]]--
+            } else {
+                letters[currentRow * ANSWER_LENGTH + i].classList.add("wrong")
+            }
+        }
+        
+        currentRow++
+        
+
+        if (currentGuess === correctWord) {
+            alert("You win")
+            done = true
+            document.querySelector(".header").classList.add("celebration")
+            return
+        }
+
+        if (currentRow === ROUNDS) {
+            done = true 
+            alert(`You lost! The correct word was ${correctWord}`)
+        }
+        currentGuess = ''
+        
+    }
+
+    function markInvalidWord() {
+        for (let i = 0; i < currentGuess.length; i++) {
+            letters[currentRow * ANSWER_LENGTH + i].classList.remove("not-valid")
+
+            setTimeout(function () {
+                letters[currentRow * ANSWER_LENGTH + i].classList.add("not-valid")
+            }, 10)
+        }
+    }
+
+    function backspace() {
+        currentGuess = currentGuess.substring(0, currentGuess.length - 1)
+        letters[currentRow * ANSWER_LENGTH + currentGuess.length].innerText = ""
+        
+    }
+
+    document.addEventListener("keydown", function handleKeyPress(event) {
+        if (done || isLoading) {
+            // do nothing
+            return
+        }
+
+        const action = event.key
+        if (action === "Enter") {
+            commit()
+        } else if (action === "Backspace") {
+            backspace()
+        } else if (isLetter(action)) {
+            addLetter(action.toUpperCase())
+        } else {
+            // do nothing
+        }
+    } )
+    
 }
 
 // Function to test wether the user is typing a single letter
@@ -38,12 +142,24 @@ function isLetter(letter) {
     return /^[a-zA-Z]$/.test(letter)
 }
 
-function init() {
-    const WORD_URL = "https://words.dev-apis.com/word-of-the-day"
-    const RANDOM_WORD_URL = "https://words.dev-apis.com/word-of-the-day?random=1"
-    const VALIDATE_WORD_URL = "https://words.dev-apis.com/validate-word"
+function setLoading(isLoading) {
+    loadingDiv.classList.toggle('hidden', !isLoading)
+}
 
-    let valid = true
+function makeMap(array) {
+    const obj = {}
+    for (let i = 0; i < array.length; i++) {
+        const letter = array[i]
+        if (obj[letter]) {
+            obj[letter]++
+        } else [
+            obj[letter] = 1
+        ]
+    }
+    return obj
+}
+
+/* let valid = true
 
     let correctWord = ''
     
@@ -58,7 +174,9 @@ function init() {
     let letterDict = {}
 
     const container = document.getElementsByClassName("word-container")[0]
-    container.onkeyup = function(e) {
+    document.addEventListener("keydown", function handleKeyPress (event) {
+        const action = event.key
+        console.log(action)
         if (parseInt(e.target.parentNode.parentNode.id) != currentRow) {
             guessedWord = ''
             currentRow = e.target.parentNode.parentNode.id
@@ -141,8 +259,44 @@ function init() {
             }
 
         }
+    })
+
+async function getWord(url) {
+    const response = await fetch(url, {method: "GET"})
+    const wordObject = await response.json()
+    const word = wordObject.word
+    return word
+}
+
+async function validateWord(url, wordGuess) {
+    try {
+        const response = await fetch(url, {
+            method: "POST", 
+            body: JSON.stringify({
+                word: wordGuess
+            })
+        })
+        const validation = await response.json()
+        return validation
+    } catch (error) {
+        console.error(error)
     }
 }
+
+function setValidation(validation) {
+    valid = validation
+    return valid
+}
+
+function getPosition(word, letter, index) {
+    return word.split(letter, index).join(letter).length
+}
+
+const countOccurences = (word, search) => {
+    return word.split(search).length - 1
+} */
+
+
 
 init()
 
